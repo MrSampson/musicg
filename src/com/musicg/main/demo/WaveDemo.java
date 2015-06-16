@@ -15,6 +15,8 @@
  */
 package com.musicg.main.demo;
 
+import java.io.IOException;
+
 import com.musicg.wave.Wave;
 import com.musicg.wave.WaveFileManager;
 
@@ -37,6 +39,11 @@ public class WaveDemo {
 
 		// save the trimmed wav
 		WaveFileManager waveFileManager=new WaveFileManager(wave);
-		waveFileManager.saveWaveAsFile(outFolder+"/out.wav");
+		try {
+		    waveFileManager.saveWaveAsFile(outFolder+"/out.wav");
+		} catch (IOException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
 	}
 }
