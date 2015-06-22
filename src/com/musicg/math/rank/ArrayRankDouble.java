@@ -16,123 +16,78 @@
 
 package com.musicg.math.rank;
 
+import java.util.Arrays;
+
+/**
+ * @author Jacquet Wong
+ *
+ */
 public class ArrayRankDouble {
 
-	/**
-	 * Get the index position of maximum value the given array 
-	 * @param array
-	 * @return	index of the max value in array
-	 */
-	public int getMaxValueIndex(double[] array) {
+    /**
+     * Get the index position of maximum value the given array
+     * 
+     * @param array
+     * @return index of the max value in array
+     */
+    public int getMaxValueIndex(double[] array) {
 
-		int index = 0;
-		double max = Integer.MIN_VALUE;
-		
-		for (int i = 0; i < array.length; i++) {
-			if (array[i] > max) {
-				max = array[i];
-				index = i;
-			}
-		}
+        int index = 0;
+        double max = Integer.MIN_VALUE;
 
-		return index;
-	}
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] > max) {
+                max = array[i];
+                index = i;
+            }
+        }
 
-	/**
-	 * Get the index position of minimum value in the given array 
-	 * @param array
-	 * @return	index of the min value in array
-	 */
-	public int getMinValueIndex(double[] array) {
+        return index;
+    }
 
-		int index = 0;
-		double min = Integer.MAX_VALUE;
+    /**
+     * Get the index position of minimum value in the given array
+     * 
+     * @param array
+     * @return index of the min value in array
+     */
+    public int getMinValueIndex(double[] array) {
 
-		for (int i = 0; i < array.length; i++) {
-			if (array[i] < min) {
-				min = array[i];
-				index = i;
-			}
-		}
+        int index = 0;
+        double min = Integer.MAX_VALUE;
 
-		return index;
-	}
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] < min) {
+                min = array[i];
+                index = i;
+            }
+        }
 
-	/**
-	 * Get the n-th value in the array after sorted
-	 * @param array
-	 * @param n
-	 * @param ascending	is ascending order or not
-	 * @return
-	 */
-	public double getNthOrderedValue(double[] array, int n, boolean ascending) {
+        return index;
+    }
 
-		if (n > array.length) {
-			n = array.length;
-		}
+    /**
+     * @param array array to get the value
+     * @param n an index into the array
+     * @param ascending
+     *            is ascending order or not
+     * @return the n-th value in the array after sorted
+     */
+    public double getNthOrderedValue(double[] array, int n, boolean ascending) {
 
-		int targetindex;
-		if (ascending) {
-			targetindex = n;
-		} else {
-			targetindex = array.length - n;
-		}
+        if (n > array.length) {
+            n = array.length;
+        }
 
-		// this value is the value of the numKey-th element
-		double passValue = getOrderedValue(array, targetindex);
+        int targetindex;
+        if (ascending) {
+            targetindex = n;
+        } else {
+            targetindex = array.length - n;
+        }
 
-		return passValue;
-	}
+        Arrays.sort(array);
 
-	private double getOrderedValue(double[] array, int index) {
-		locate(array, 0, array.length - 1, index);
-		return array[index];
-	}
-
-	// sort the partitions by quick sort, and locate the target index
-	private void locate(double[] array, int left, int right, int index) {
-
-		int mid = (left + right) / 2;
-		// System.out.println(left+" to "+right+" ("+mid+")");
-
-		if (right == left) {
-			// System.out.println("* "+array[targetIndex]);
-			// result=array[targetIndex];
-			return;
-		}
-
-		if (left < right) {
-			double s = array[mid];
-			int i = left - 1;
-			int j = right + 1;
-
-			while (true) {
-				while (array[++i] < s)
-					;
-				while (array[--j] > s)
-					;
-				if (i >= j)
-					break;
-				swap(array, i, j);
-			}
-
-			// System.out.println("2 parts: "+left+"-"+(i-1)+" and "+(j+1)+"-"+right);
-
-			if (i > index) {
-				// the target index in the left partition
-				// System.out.println("left partition");
-				locate(array, left, i - 1, index);
-			} else {
-				// the target index in the right partition
-				// System.out.println("right partition");
-				locate(array, j + 1, right, index);
-			}
-		}
-	}
-
-	private void swap(double[] array, int i, int j) {
-		double t = array[i];
-		array[i] = array[j];
-		array[j] = t;
-	}
+        return array[n];
+    }
 }

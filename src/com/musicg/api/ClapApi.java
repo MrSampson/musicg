@@ -24,34 +24,44 @@ import com.musicg.wave.WaveHeader;
  * @author Jacquet Wong
  * 
  */
-public class ClapApi extends DetectionApi{
-	
-	public ClapApi(WaveHeader waveHeader) {
-		super(waveHeader);
-	}
+public class ClapApi extends DetectionApi {
 
-	protected void init(){
-		// settings for detecting a clap
-		minFrequency = 1000.0f;
-		maxFrequency = Double.MAX_VALUE;
-		
-		// get the decay part of a clap
-		minIntensity = 10000.0f;
-		maxIntensity = 100000.0f;
-		
-		minStandardDeviation = 0.0f;
-		maxStandardDeviation = 0.05f;
-		
-		highPass = 100;
-		lowPass = 10000;
-		
-		minNumZeroCross = 100;
-		maxNumZeroCross = 500;
-		
-		numRobust = 4;
-	}
-		
-	public boolean isClap(byte[] audioBytes){
-		return isSpecificSound(audioBytes);
-	}
+    /**
+     * @param waveHeader
+     *            the WAV file header
+     */
+    public ClapApi(WaveHeader waveHeader) {
+        super(waveHeader);
+    }
+
+    @Override
+    protected void init() {
+        // settings for detecting a clap
+        minFrequency = 1000.0f;
+        maxFrequency = Double.MAX_VALUE;
+
+        // get the decay part of a clap
+        minIntensity = 10000.0f;
+        maxIntensity = 100000.0f;
+
+        minStandardDeviation = 0.0f;
+        maxStandardDeviation = 0.05f;
+
+        highPass = 100;
+        lowPass = 10000;
+
+        minNumZeroCross = 100;
+        maxNumZeroCross = 500;
+
+        numRobust = 4;
+    }
+
+    /**
+     * @param audioBytes
+     *            audio sample
+     * @return true if it a clap
+     */
+    public boolean isClap(byte[] audioBytes) {
+        return isSpecificSound(audioBytes);
+    }
 }

@@ -15,6 +15,8 @@
  */
 package com.musicg.main.demo;
 
+import java.io.IOException;
+
 import com.musicg.graphic.GraphicRender;
 import com.musicg.wave.Wave;
 
@@ -25,7 +27,13 @@ public class RenderWaveformDemo {
 		String outFolder = "out";
 
 		// create a wave object
-		Wave wave = new Wave(filename);
+		Wave wave = null;
+        try {
+            wave = new Wave(filename);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	
 		// Graphic render
 		GraphicRender render=new GraphicRender();

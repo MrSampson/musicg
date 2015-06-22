@@ -5,11 +5,22 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+/**
+ * @author Jacquet Wong
+ *
+ */
 public class ObjectSerializer{
 	
+	/**
+	 * Constructor.
+	 */
 	public ObjectSerializer(){
 	}
 	
+	/**
+	 * @param object
+	 * @param dumpFile
+	 */
 	public void dump(Object object, String dumpFile){
 		// serialize the object
 		try {
@@ -24,6 +35,10 @@ public class ObjectSerializer{
 		}
 	}
 	
+	/**
+	 * @param dumpFile
+	 * @return
+	 */
 	public Object load(String dumpFile){
 		
 		Object object=null;

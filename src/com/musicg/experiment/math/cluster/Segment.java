@@ -15,32 +15,54 @@
  */
 
 package com.musicg.experiment.math.cluster;
+/**
+ * @author Jacquet Wong
+ *
+ */
 public class Segment {
 	
 	private int startPosition;
 	private int size;
 	private double mean;
 
+	/**
+	 * @return the start position
+	 */
 	public int getStartPosition() {
 		return startPosition;
 	}
 
+	/**
+	 * @param startPosition start position
+	 */
 	public void setStartPosition(int startPosition) {
 		this.startPosition = startPosition;
 	}
 
+	/**
+	 * @return the size
+	 */
 	public int getSize() {
 		return size;
 	}
 
+	/**
+	 * @param size size
+	 */
 	public void setSize(int size) {
 		this.size = size;
 	}
 
+	/**
+	 * @return mean
+	 */
 	public double getMean() {
 		return mean;
 	}
 
+	/**
+	 * @param mean mean
+	 */
 	public void setMean(double mean) {
 		this.mean = mean;
 	}

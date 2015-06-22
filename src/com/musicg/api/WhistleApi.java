@@ -26,11 +26,15 @@ import com.musicg.wave.WaveHeader;
  */
 public class WhistleApi extends DetectionApi{
 	
+	/**
+	 * @param waveHeader the WAV file header
+	 */
 	public WhistleApi(WaveHeader waveHeader) {
 		super(waveHeader);
 	}
 
-	protected void init(){
+	@Override
+    protected void init(){
 		// settings for detecting a whistle
 		minFrequency = 600.0f;
 		maxFrequency = Double.MAX_VALUE;
@@ -50,6 +54,10 @@ public class WhistleApi extends DetectionApi{
 		numRobust = 10;
 	}
 		
+	/**
+	 * @param audioBytes the audio sample
+	 * @return true if sound is a whistle
+	 */
 	public boolean isWhistle(byte[] audioBytes){
 		return isSpecificSound(audioBytes);
 	}

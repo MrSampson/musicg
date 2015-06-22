@@ -28,7 +28,13 @@ public class WaveDemo {
 		String outFolder="out";
 
 		// create a wave object
-		Wave wave = new Wave(filename);
+		Wave wave = null;
+        try {
+            wave = new Wave(filename);
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 
 		// print the wave header and info
 		System.out.println(wave);
@@ -38,9 +44,8 @@ public class WaveDemo {
 		wave.rightTrim(0.5F);
 
 		// save the trimmed wav
-		WaveFileManager waveFileManager=new WaveFileManager(wave);
 		try {
-		    waveFileManager.saveWaveAsFile(outFolder+"/out.wav");
+		    WaveFileManager.save(outFolder+"/out.wav", wave);
 		} catch (IOException e) {
 		    // TODO Auto-generated catch block
 		    e.printStackTrace();

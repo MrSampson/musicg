@@ -15,6 +15,8 @@
  */
 package com.musicg.main.demo;
 
+import java.io.IOException;
+
 import com.musicg.graphic.GraphicRender;
 import com.musicg.wave.Wave;
 import com.musicg.wave.extension.Spectrogram;
@@ -27,7 +29,13 @@ public class RenderSpectrogramDemo {
 		String filename = "cock_a_1.wav";
 
 		// create a wave object
-		Wave wave = new Wave(inFolder+"/"+filename);
+		Wave wave = null;
+        try {
+            wave = new Wave(inFolder+"/"+filename);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 		Spectrogram spectrogram = new Spectrogram(wave);
 
 		// Graphic render

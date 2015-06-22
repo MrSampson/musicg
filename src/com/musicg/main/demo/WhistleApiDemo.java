@@ -15,6 +15,8 @@
  */
 package com.musicg.main.demo;
 
+import java.io.IOException;
+
 import com.musicg.wave.Wave;
 import com.musicg.wave.WaveTypeDetector;
 
@@ -23,7 +25,13 @@ public class WhistleApiDemo{
 		String filename = "audio_work/whistle.wav";
 
 		// create a wave object
-		Wave wave = new Wave(filename);
+		Wave wave = null;
+        try {
+            wave = new Wave(filename);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
 		WaveTypeDetector waveTypeDetector=new WaveTypeDetector(wave);
 		System.out.println("Is whistle probability: "+waveTypeDetector.getWhistleProbability());

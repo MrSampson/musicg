@@ -15,12 +15,14 @@
  */
 package com.musicg.main.demo;
 
+import java.io.IOException;
+
 import com.musicg.fingerprint.FingerprintSimilarity;
 import com.musicg.wave.Wave;
 
 public class FingerprintRecognitionDemo {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		String songA = "audio_work/songs/canon_d_major.wav";
 		String songB = "audio_work/songs/fing_fing_ha.wav";

@@ -16,6 +16,10 @@
 
 package com.musicg.properties;
 
+/**
+ * @author Jacquet Wong
+ *
+ */
 public class FingerprintProperties{
 	
 	protected static FingerprintProperties instance=null;
