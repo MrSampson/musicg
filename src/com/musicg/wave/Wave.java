@@ -16,7 +16,9 @@
 
 package com.musicg.wave;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -61,7 +63,6 @@ public class Wave implements Serializable {
         InputStream inputStream = new FileInputStream(filename);
         initWaveWithInputStream(inputStream);
         inputStream.close();
-
     }
 
     /**
@@ -69,7 +70,7 @@ public class Wave implements Serializable {
      * 
      * @param inputStream
      *            Wave file input stream
-     * @throws IOException 
+     * @throws IOException  IO exception
      */
     public Wave(InputStream inputStream) throws IOException {
         initWaveWithInputStream(inputStream);
@@ -84,6 +85,17 @@ public class Wave implements Serializable {
     public Wave(WaveHeader waveHeader, byte[] data) {
         this.waveHeader = waveHeader;
         this.data = data;
+    }
+
+    /**
+     * Constructor with {@link File}.
+     * @param f the file to load into the WAV object
+     * @throws IOException IO exception
+     */
+    public Wave(File f) throws IOException {
+        InputStream is = new FileInputStream(f);
+        initWaveWithInputStream(is);
+        is.close();
     }
 
     private void initWaveWithInputStream(InputStream inputStream)
