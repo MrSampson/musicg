@@ -43,14 +43,14 @@ public class LinearInterpolation {
      *            original samples
      * @return interpolated samples
      */
-    public short[] interpolate(int oldSampleRate, int newSampleRate,
+    public static short[] interpolate(int oldSampleRate, int newSampleRate,
             short[] samples) {
 
         if (oldSampleRate == newSampleRate) {
             return samples;
         }
 
-        int newLength = (int) Math.round(((float) samples.length
+        int newLength = Math.round(((float) samples.length
                 / oldSampleRate * newSampleRate));
         float lengthMultiplier = (float) newLength / samples.length;
         short[] interpolatedSamples = new short[newLength];

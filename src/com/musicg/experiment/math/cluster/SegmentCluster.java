@@ -61,7 +61,7 @@ public class SegmentCluster {
     public List<Segment> getSegments(double[] array) {
 
         PitchHandler pitchHandler = new PitchHandler();
-        List<Segment> segmentList = new LinkedList<Segment>();
+        List<Segment> segmentList = new LinkedList<>();
 
         double segmentMean = 0;
         int segmentSize = 0;
