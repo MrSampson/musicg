@@ -50,10 +50,8 @@ public class MapRankInteger {
 	    int count = 0;
 
 	    // get the pass values
-	    Iterator<Entry<Integer, Integer>> mapIterator = mapEntrySet
-		    .iterator();
-	    while (mapIterator.hasNext()) {
-		Entry<Integer, Integer> entry = mapIterator.next();
+	    
+	    for (Entry<Integer, Integer> entry : mapEntrySet) {		
 		array[count++] = entry.getValue();
 	    }
 	    // end get the pass values
@@ -72,10 +70,9 @@ public class MapRankInteger {
 	    // get the passed keys and values
 	    Map<Integer, Integer> passedMap = new HashMap<>();
 	    List<Integer> valueList = new LinkedList<>();
-	    mapIterator = mapEntrySet.iterator();
-
-	    while (mapIterator.hasNext()) {
-		Entry<Integer, Integer> entry = mapIterator.next();
+	   
+	    for (Entry<Integer, Integer> entry :mapEntrySet) {
+		 
 		int value = entry.getValue();
 		if ((acsending && value <= passValue)
 			|| (!acsending && value >= passValue)) {
