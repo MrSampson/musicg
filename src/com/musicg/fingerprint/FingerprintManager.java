@@ -127,11 +127,8 @@ public class FingerprintManager {
 		    byteList.add((byte) y);
 
 		    // next 4 bytes is intensity
-		    int intensity = (int) (spectorgramData[x][y] * Integer.MAX_VALUE); // spectorgramData
-										       // is
-										       // ranged
-										       // from
-										       // 0~1
+		    // spectorgramData is ranged from 0~1
+		    int intensity = (int) (spectorgramData[x][y] * Integer.MAX_VALUE);
 		    byteList.add((byte) (intensity >> 24));
 		    byteList.add((byte) (intensity >> 16));
 		    byteList.add((byte) (intensity >> 8));
@@ -158,7 +155,7 @@ public class FingerprintManager {
      *            fingerprint filename
      * @return fingerprint in bytes
      */
-    public byte[] getFingerprintFromFile(String fingerprintFile) {
+    public static byte[] getFingerprintFromFile(String fingerprintFile) {
 	byte[] fingerprint = null;
 	try {
 	    InputStream fis = new FileInputStream(fingerprintFile);
@@ -175,8 +172,8 @@ public class FingerprintManager {
     /**
      * Get bytes from fingerprint inputstream
      * 
-     * @param fingerprintFile
-     *            fingerprint inputstream
+     * @param inputStream
+     * 
      * @return fingerprint in bytes
      */
     public static byte[] getFingerprintFromInputStream(InputStream inputStream) {
@@ -197,7 +194,6 @@ public class FingerprintManager {
      *            fingerprint bytes
      * @param filename
      *            fingerprint filename
-     * @see fingerprint file saved
      */
     public static void saveFingerprintAsFile(byte[] fingerprint, String filename) {
 
@@ -205,7 +201,7 @@ public class FingerprintManager {
 	try {
 	    fileOutputStream = new FileOutputStream(filename);
 	    fileOutputStream.write(fingerprint);
-	    
+
 	} catch (FileNotFoundException e1) {
 	    e1.printStackTrace();
 	} catch (IOException e) {
