@@ -26,7 +26,7 @@ public interface IntensityProcessor{
 	 */
 	public void execute();
 	/**
-	 * @return
+	 * @return intensities
 	 */
 	public double[][] getIntensities();
 }
