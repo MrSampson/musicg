@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 Jacquet Wong
+ * Copyright (C) 2015 Oliver Sampson
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,17 @@
 
 package com.musicg.wave;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
+
+import org.knime.core.util.FileUtil;
 
 import com.musicg.fingerprint.FingerprintManager;
 import com.musicg.fingerprint.FingerprintSimilarity;
@@ -30,16 +36,14 @@ import com.musicg.wave.extension.NormalizedSampleAmplitudes;
 import com.musicg.wave.extension.Spectrogram;
 
 /**
- * 
- * 
  * @author Jacquet Wong
  * @author Oliver Sampson, University of Konstanz
  */
 public class Wave implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private WaveHeader waveHeader;
-    private byte[] data; // little endian
+    private WaveHeader m_waveHeader;
+    private byte[] m_data; // little endian
     private byte[] fingerprint;
 
     /**
@@ -47,8 +51,8 @@ public class Wave implements Serializable {
      * 
      */
     public Wave() {
-        this.waveHeader = new WaveHeader();
-        this.data = new byte[0];
+        this.m_waveHeader = new WaveHeader();
+        this.m_data = new byte[0];
     }
 
     /**
@@ -59,38 +63,52 @@ public class Wave implements Serializable {
      * @throws IOException
      */
     public Wave(String filename) throws IOException {
-
-        InputStream inputStream = new FileInputStream(filename);
-        initWaveWithInputStream(inputStream);
+        FileInputStream inputStream = new FileInputStream(filename);
+        initWaveWithFileInputStream(inputStream);
         inputStream.close();
     }
 
+    private void initWaveWithFileInputStream(FileInputStream in) throws IOException {
+        this.m_waveHeader = new WaveHeader(in);
+        if(this.m_waveHeader.isValid()){
+            this.m_data = new byte[in.available()];
+            in.read(this.m_data);
+        }
+        
+    }
+
     /**
-     * Constructor
+     * Constructor.
      * 
      * @param inputStream
      *            Wave file input stream
-     * @throws IOException  IO exception
+     * @throws IOException
+     *             IO exception
      */
     public Wave(InputStream inputStream) throws IOException {
         initWaveWithInputStream(inputStream);
     }
 
     /**
-     * Constructor
+     * Constructor.
      * 
      * @param waveHeader
+     *            the WaveHeader
      * @param data
+     *            the audio data
      */
     public Wave(WaveHeader waveHeader, byte[] data) {
-        this.waveHeader = waveHeader;
-        this.data = data;
+        this.m_waveHeader = waveHeader;
+        this.m_data = data;
     }
 
     /**
      * Constructor with {@link File}.
-     * @param f the file to load into the WAV object
-     * @throws IOException IO exception
+     * 
+     * @param f
+     *            the file to load into the WAV object
+     * @throws IOException
+     *             IO exception
      */
     public Wave(File f) throws IOException {
         InputStream is = new FileInputStream(f);
@@ -98,21 +116,21 @@ public class Wave implements Serializable {
         is.close();
     }
 
-    private void initWaveWithInputStream(InputStream inputStream)
-            throws IOException {
-        // reads the first 44 bytes for header
-        waveHeader = new WaveHeader(inputStream);
+    
+    private void initWaveWithInputStream(InputStream in) throws IOException {
 
-        if (waveHeader.isValid()) {
-            // load data
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        FileUtil.copy(in, out);
+        out.close();
 
-            data = new byte[inputStream.available()];
-            inputStream.read(data);
+        byte[] buffer = out.toByteArray();
 
-           
-        } else {
-           throw new IOException("Invalid WAV file header.");
-        }
+        this.m_waveHeader = new WaveHeader(Arrays.copyOf(buffer,
+                WaveHeader.HEADER_BYTE_LENGTH));        
+
+        this.m_data = Arrays.copyOfRange(buffer, WaveHeader.HEADER_BYTE_LENGTH,
+                buffer.length - WaveHeader.HEADER_BYTE_LENGTH);
+
     }
 
     /**
@@ -125,8 +143,8 @@ public class Wave implements Serializable {
      */
     public void trim(int leftTrimNumberOfSample, int rightTrimNumberOfSample) {
 
-        long chunkSize = waveHeader.getChunkSize();
-        long subChunk2Size = waveHeader.getSubChunk2Size();
+        long chunkSize = this.m_waveHeader.getChunkSize();
+        long subChunk2Size = this.m_waveHeader.getSubChunk2Size();
 
         long totalTrimmed = leftTrimNumberOfSample + rightTrimNumberOfSample;
 
@@ -139,13 +157,13 @@ public class Wave implements Serializable {
         subChunk2Size -= totalTrimmed;
 
         if (chunkSize >= 0 && subChunk2Size >= 0) {
-            waveHeader.setChunkSize(chunkSize);
-            waveHeader.setSubChunk2Size(subChunk2Size);
+            this.m_waveHeader.setChunkSize(chunkSize);
+            this.m_waveHeader.setSubChunk2Size(subChunk2Size);
 
             byte[] trimmedData = new byte[(int) subChunk2Size];
-            System.arraycopy(data, (int) leftTrimNumberOfSample, trimmedData,
-                    0, (int) subChunk2Size);
-            data = trimmedData;
+            System.arraycopy(this.m_data, (int) leftTrimNumberOfSample,
+                    trimmedData, 0, (int) subChunk2Size);
+            this.m_data = trimmedData;
         } else {
             System.err.println("Trim error: Negative length");
         }
@@ -181,9 +199,9 @@ public class Wave implements Serializable {
      */
     public void trim(double leftTrimSecond, double rightTrimSecond) {
 
-        int sampleRate = waveHeader.getSampleRate();
-        int bitsPerSample = waveHeader.getBitsPerSample();
-        int channels = waveHeader.getChannels();
+        int sampleRate = this.m_waveHeader.getSampleRate();
+        int bitsPerSample = this.m_waveHeader.getBitsPerSample();
+        int channels = this.m_waveHeader.getChannels();
 
         int leftTrimNumberOfSample = (int) (sampleRate * bitsPerSample / 8
                 * channels * leftTrimSecond);
@@ -219,7 +237,7 @@ public class Wave implements Serializable {
      * @return waveHeader
      */
     public WaveHeader getWaveHeader() {
-        return waveHeader;
+        return this.m_waveHeader;
     }
 
     /**
@@ -253,7 +271,7 @@ public class Wave implements Serializable {
      * @return wave data
      */
     public byte[] getBytes() {
-        return data;
+        return this.m_data;
     }
 
     /**
@@ -262,7 +280,7 @@ public class Wave implements Serializable {
      * @return byte size of the wave
      */
     public int size() {
-        return data.length;
+        return this.m_data.length;
     }
 
     /**
@@ -271,8 +289,8 @@ public class Wave implements Serializable {
      * @return length in second
      */
     public float length() {
-        float second = (float) waveHeader.getSubChunk2Size()
-                / waveHeader.getByteRate();
+        float second = (float) this.m_waveHeader.getSubChunk2Size()
+                / this.m_waveHeader.getByteRate();
         return second;
     }
 
@@ -305,8 +323,8 @@ public class Wave implements Serializable {
      * @return amplitudes array (signed 16-bit)
      */
     public short[] getSampleAmplitudes() {
-        int bytePerSample = waveHeader.getBitsPerSample() / 8;
-        int numSamples = data.length / bytePerSample;
+        int bytePerSample = this.m_waveHeader.getBitsPerSample() / 8;
+        int numSamples = this.m_data.length / bytePerSample;
         short[] amplitudes = new short[numSamples];
 
         int pointer = 0;
@@ -314,7 +332,7 @@ public class Wave implements Serializable {
             short amplitude = 0;
             for (int byteNumber = 0; byteNumber < bytePerSample; byteNumber++) {
                 // little endian
-                amplitude |= (short) ((data[pointer++] & 0xFF) << (byteNumber * 8));
+                amplitude |= (short) ((this.m_data[pointer++] & 0xFF) << (byteNumber * 8));
             }
             amplitudes[i] = amplitude;
         }
@@ -324,7 +342,7 @@ public class Wave implements Serializable {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(waveHeader.toString());
+        StringBuffer sb = new StringBuffer(this.m_waveHeader.toString());
         sb.append("\n");
         sb.append("length: " + timestamp());
         return sb.toString();
@@ -343,11 +361,11 @@ public class Wave implements Serializable {
      * @return
      */
     public byte[] getFingerprint() {
-        if (fingerprint == null) {
+        if (this.fingerprint == null) {
             FingerprintManager fingerprintManager = new FingerprintManager();
-            fingerprint = fingerprintManager.extractFingerprint(this);
+            this.fingerprint = fingerprintManager.extractFingerprint(this);
         }
-        return fingerprint;
+        return this.fingerprint;
     }
 
     /**
@@ -358,5 +376,41 @@ public class Wave implements Serializable {
         FingerprintSimilarityComputer fingerprintSimilarityComputer = new FingerprintSimilarityComputer(
                 this.getFingerprint(), wave.getFingerprint());
         return fingerprintSimilarityComputer.getFingerprintsSimilarity();
+    }
+
+    /**
+     * Save the wave file using a filename.
+     * 
+     * @param filename
+     *            filename to be saved
+     * @throws IOException
+     *             IO Exception
+     * 
+     */
+    public void save(String filename) throws IOException {
+
+        FileOutputStream fos = null;
+        fos = new FileOutputStream(filename);
+        save(fos);
+        fos.close();
+    }
+
+    /**
+     * Save the wave file using an output stream
+     * 
+     * @param os
+     *            the output stream to save the file to
+     * @throws IOException
+     *             IOException
+     */
+    public void save(OutputStream os) throws IOException {
+
+        this.m_waveHeader.save(os);
+        os.write(this.getBytes());
+    }
+
+    public byte[] getHeaderBuffer() {
+
+        return null;
     }
 }

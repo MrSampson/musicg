@@ -3,5 +3,84 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="/home/sampson/workspaces/bioml/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.knime.core_2.12.0.0047293/knime-core.jar" sourcepath="/home/sampson/workspaces/bioml/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.knime.core.source_2.12.0.0047293.jar">
+		<accessrules>
+			<accessrule kind="accessible" pattern="log4j/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/blob/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/collection/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/container/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/date/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/def/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/filestore/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/icon/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/image/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/image/png/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/model/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/property/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/renderer/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/sort/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/util/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/util/memory/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/vector/bitvector/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/vector/bytevector/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/xml/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/xml/io/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/data/xml/util/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/eclipseUtil/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/internal/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/config/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/defaultnodesettings/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/dialog/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/exec/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/icon/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/interactive/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/interrupt/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/database/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/database/aggregation/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/database/aggregation/function/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/database/aggregation/function/booleanoption/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/database/aggregation/function/column/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/database/aggregation/function/concatenate/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/flowvariable/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/image/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/inactive/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/pmml/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/pmml/preproc/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/pmml/schemata/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/port/viewproperty/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/property/hilite/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/streamable/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/streamable/simple/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/tableview/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/util/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/util/filter/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/util/filter/column/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/util/filter/variable/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/web/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/wizard/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/workflow/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/workflow/execresult/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/workflow/virtual/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/workflow/virtual/parchunk/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/node/workflow/virtual/subnode/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/quickform/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/quickform/in/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/quickform/out/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/util/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/util/pathresolve/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/util/tokenizer/*"/>
+			<accessrule kind="accessible" pattern="org/knime/core/xml/*"/>
+			<accessrule kind="accessible" pattern="org/knime/node/v210/*"/>
+			<accessrule kind="accessible" pattern="org/knime/node/v212/*"/>
+			<accessrule kind="accessible" pattern="org/knime/node/v28/*"/>
+			<accessrule kind="accessible" pattern="org/knime/node2012/*"/>
+			<accessrule kind="accessible" pattern="org/knime/node2012/impl/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

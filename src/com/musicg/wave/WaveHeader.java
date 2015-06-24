@@ -18,12 +18,16 @@ package com.musicg.wave;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 
 /**
  * WAV File Specification
  * https://ccrma.stanford.edu/courses/422/projects/WaveFormat/
  * 
  * @author Jacquet Wong
+ * @author Oliver Sampson
  */
 public class WaveHeader {
 
@@ -48,36 +52,26 @@ public class WaveHeader {
      */
     public static final int HEADER_BYTE_LENGTH = 44;
 
-    private boolean valid;
-    private String chunkId; // 4 bytes
-    private long chunkSize; // unsigned 4 bytes, little endian
-    private String format; // 4 bytes
-    private String subChunk1Id; // 4 bytes
-    private long subChunk1Size; // unsigned 4 bytes, little endian
-    private int audioFormat; // unsigned 2 bytes, little endian
-    private int channels; // unsigned 2 bytes, little endian
-    private long sampleRate; // unsigned 4 bytes, little endian
-    private long byteRate; // unsigned 4 bytes, little endian
-    private int blockAlign; // unsigned 2 bytes, little endian
-    private int bitsPerSample; // unsigned 2 bytes, little endian
-    private String subChunk2Id; // 4 bytes
-    private long subChunk2Size; // unsigned 4 bytes, little endian
+    private boolean m_valid;
+    private String m_chunkId; // 4 bytes
+    private long m_chunkSize; // unsigned 4 bytes, little endian
+    private String m_format; // 4 bytes
+    private String m_subChunk1Id; // 4 bytes
+    private long m_subChunk1Size; // unsigned 4 bytes, little endian
+    private int m_audioFormat; // unsigned 2 bytes, little endian
+    private int m_channels; // unsigned 2 bytes, little endian
+    private long m_sampleRate; // unsigned 4 bytes, little endian
+    private long m_byteRate; // unsigned 4 bytes, little endian
+    private int m_blockAlign; // unsigned 2 bytes, little endian
+    private int m_bitsPerSample; // unsigned 2 bytes, little endian
+    private String m_subChunk2Id; // 4 bytes
+    private long m_subChunk2Size; // unsigned 4 bytes, little endian
 
     /**
      * Constructor.
      */
     public WaveHeader() {
-        // init a 8k 16bit mono wav
-        chunkSize = 36;
-        subChunk1Size = 16;
-        audioFormat = 1;
-        channels = 1;
-        sampleRate = 8000;
-        byteRate = 16000;
-        blockAlign = 2;
-        bitsPerSample = 16;
-        subChunk2Size = 0;
-        valid = true;
+  
     }
 
     /**
@@ -85,314 +79,440 @@ public class WaveHeader {
      * 
      * @param inputStream
      *            stream to get WAV file
+     * @throws IOException
+     *             IO exception
      */
-    public WaveHeader(InputStream inputStream) {
-        valid = loadHeader(inputStream);
-    }
-
-    private boolean loadHeader(InputStream inputStream) {
-
-        byte[] headerBuffer = new byte[HEADER_BYTE_LENGTH];
-        try {
-            inputStream.read(headerBuffer);
-
-            // read header
-            int pointer = 0;
-            chunkId = new String(new byte[] { headerBuffer[pointer++],
-                    headerBuffer[pointer++], headerBuffer[pointer++],
-                    headerBuffer[pointer++] });
-            // little endian
-            chunkSize = (long) (headerBuffer[pointer++] & 0xff)
-                    | (long) (headerBuffer[pointer++] & 0xff) << 8
-                    | (long) (headerBuffer[pointer++] & 0xff) << 16
-                    | (long) (headerBuffer[pointer++] & 0xff << 24);
-            format = new String(new byte[] { headerBuffer[pointer++],
-                    headerBuffer[pointer++], headerBuffer[pointer++],
-                    headerBuffer[pointer++] });
-            subChunk1Id = new String(new byte[] { headerBuffer[pointer++],
-                    headerBuffer[pointer++], headerBuffer[pointer++],
-                    headerBuffer[pointer++] });
-            subChunk1Size = (long) (headerBuffer[pointer++] & 0xff)
-                    | (long) (headerBuffer[pointer++] & 0xff) << 8
-                    | (long) (headerBuffer[pointer++] & 0xff) << 16
-                    | (long) (headerBuffer[pointer++] & 0xff) << 24;
-            audioFormat = (int) ((headerBuffer[pointer++] & 0xff) | (headerBuffer[pointer++] & 0xff) << 8);
-            channels = (int) ((headerBuffer[pointer++] & 0xff) | (headerBuffer[pointer++] & 0xff) << 8);
-            sampleRate = (long) (headerBuffer[pointer++] & 0xff)
-                    | (long) (headerBuffer[pointer++] & 0xff) << 8
-                    | (long) (headerBuffer[pointer++] & 0xff) << 16
-                    | (long) (headerBuffer[pointer++] & 0xff) << 24;
-            byteRate = (long) (headerBuffer[pointer++] & 0xff)
-                    | (long) (headerBuffer[pointer++] & 0xff) << 8
-                    | (long) (headerBuffer[pointer++] & 0xff) << 16
-                    | (long) (headerBuffer[pointer++] & 0xff) << 24;
-            blockAlign = (int) ((headerBuffer[pointer++] & 0xff) | (headerBuffer[pointer++] & 0xff) << 8);
-            bitsPerSample = (int) ((headerBuffer[pointer++] & 0xff) | (headerBuffer[pointer++] & 0xff) << 8);
-            subChunk2Id = new String(new byte[] { headerBuffer[pointer++],
-                    headerBuffer[pointer++], headerBuffer[pointer++],
-                    headerBuffer[pointer++] });
-            subChunk2Size = (long) (headerBuffer[pointer++] & 0xff)
-                    | (long) (headerBuffer[pointer++] & 0xff) << 8
-                    | (long) (headerBuffer[pointer++] & 0xff) << 16
-                    | (long) (headerBuffer[pointer++] & 0xff) << 24;
-            // end read header
-
-            // the inputStream should be closed outside this method
-
-            // dis.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        if (bitsPerSample != 8 && bitsPerSample != 16) {
-            System.err
-                    .println("WaveHeader: only supports bitsPerSample 8 or 16");
-            return false;
-        }
-
-        // check the format is support
-        if (chunkId.toUpperCase().equals(RIFF_HEADER)
-                && format.toUpperCase().equals(WAVE_HEADER) && audioFormat == 1) {
-            return true;
-        } else {
-            System.err.println("WaveHeader: Unsupported header format");
-        }
-
-        return false;
+    public WaveHeader(InputStream inputStream) throws IOException {
+        this.m_valid = loadHeader(inputStream);
     }
 
     /**
-     * @return
+     * Constructor with raw bytes of a header buffer.
+     * 
+     * @param headerBuffer
+     *            the bytes of the header buffer.
+     */
+    public WaveHeader(byte[] headerBuffer) {
+        parseHeader(headerBuffer);
+    }
+
+    void parseHeader(byte[] headerBuffer) {
+        int pointer = 0;
+        this.m_chunkId = new String(new byte[] { headerBuffer[pointer++],
+                headerBuffer[pointer++], headerBuffer[pointer++],
+                headerBuffer[pointer++] });
+        // little endian
+        this.m_chunkSize = (long) (headerBuffer[pointer++] & 0xff)
+                | (long) (headerBuffer[pointer++] & 0xff) << 8
+                | (long) (headerBuffer[pointer++] & 0xff) << 16
+                | (long) (headerBuffer[pointer++] & 0xff << 24);
+        this.m_format = new String(new byte[] { headerBuffer[pointer++],
+                headerBuffer[pointer++], headerBuffer[pointer++],
+                headerBuffer[pointer++] });
+        this.m_subChunk1Id = new String(new byte[] { headerBuffer[pointer++],
+                headerBuffer[pointer++], headerBuffer[pointer++],
+                headerBuffer[pointer++] });
+        this.m_subChunk1Size = (long) (headerBuffer[pointer++] & 0xff)
+                | (long) (headerBuffer[pointer++] & 0xff) << 8
+                | (long) (headerBuffer[pointer++] & 0xff) << 16
+                | (long) (headerBuffer[pointer++] & 0xff) << 24;
+        this.m_audioFormat = (int) ((headerBuffer[pointer++] & 0xff) | (headerBuffer[pointer++] & 0xff) << 8);
+        this.m_channels = (int) ((headerBuffer[pointer++] & 0xff) | (headerBuffer[pointer++] & 0xff) << 8);
+        this.m_sampleRate = (long) (headerBuffer[pointer++] & 0xff)
+                | (long) (headerBuffer[pointer++] & 0xff) << 8
+                | (long) (headerBuffer[pointer++] & 0xff) << 16
+                | (long) (headerBuffer[pointer++] & 0xff) << 24;
+        this.m_byteRate = (long) (headerBuffer[pointer++] & 0xff)
+                | (long) (headerBuffer[pointer++] & 0xff) << 8
+                | (long) (headerBuffer[pointer++] & 0xff) << 16
+                | (long) (headerBuffer[pointer++] & 0xff) << 24;
+        this.m_blockAlign = (int) ((headerBuffer[pointer++] & 0xff) | (headerBuffer[pointer++] & 0xff) << 8);
+        this.m_bitsPerSample = (int) ((headerBuffer[pointer++] & 0xff) | (headerBuffer[pointer++] & 0xff) << 8);
+        this.m_subChunk2Id = new String(new byte[] { headerBuffer[pointer++],
+                headerBuffer[pointer++], headerBuffer[pointer++],
+                headerBuffer[pointer++] });
+        this.m_subChunk2Size = (long) (headerBuffer[pointer++] & 0xff)
+                | (long) (headerBuffer[pointer++] & 0xff) << 8
+                | (long) (headerBuffer[pointer++] & 0xff) << 16
+                | (long) (headerBuffer[pointer++] & 0xff) << 24;
+
+    }
+
+    /**
+     * @return byte array representation of the WAV header
+     */
+    public byte[] getBytes() {
+        byte[] buffer = new byte[HEADER_BYTE_LENGTH];
+
+        int byteRate = this.getByteRate();
+        int audioFormat = this.getAudioFormat();
+        int sampleRate = this.getSampleRate();
+        int bitsPerSample = this.getBitsPerSample();
+        int channels = this.getChannels();
+        long chunkSize = this.getChunkSize();
+        long subChunk1Size = this.getSubChunk1Size();
+        long subChunk2Size = this.getSubChunk2Size();
+        int blockAlign = this.getBlockAlign();
+
+        int i = 0;
+        for (byte b : RIFF_HEADER.getBytes()) {
+            buffer[i++] = b;
+        }
+
+        for (byte b : new byte[] { (byte) (chunkSize), (byte) (chunkSize >> 8),
+                (byte) (chunkSize >> 16), (byte) (chunkSize >> 24) }) {
+            buffer[i++] = b;
+        }
+
+        for (byte b : new byte[] { (byte) (chunkSize), (byte) (chunkSize >> 8),
+                (byte) (chunkSize >> 16), (byte) (chunkSize >> 24) }) {
+            buffer[i++] = b;
+        }
+        for (byte b : WaveHeader.WAVE_HEADER.getBytes()) {
+            buffer[i++] = b;
+        }
+        for (byte b : WaveHeader.FMT_HEADER.getBytes()) {
+            buffer[i++] = b;
+        }
+        for (byte b : new byte[] { (byte) (subChunk1Size),
+                (byte) (subChunk1Size >> 8), (byte) (subChunk1Size >> 16),
+                (byte) (subChunk1Size >> 24) }) {
+            buffer[i++] = b;
+        }
+        for (byte b : new byte[] { (byte) (audioFormat),
+                (byte) (audioFormat >> 8) }) {
+            buffer[i++] = b;
+        }
+        for (byte b : new byte[] { (byte) (channels), (byte) (channels >> 8) }) {
+            buffer[i++] = b;
+        }
+        for (byte b : new byte[] { (byte) (sampleRate),
+                (byte) (sampleRate >> 8), (byte) (sampleRate >> 16),
+                (byte) (sampleRate >> 24) }) {
+            buffer[i++] = b;
+        }
+        for (byte b : new byte[] { (byte) (byteRate), (byte) (byteRate >> 8),
+                (byte) (byteRate >> 16), (byte) (byteRate >> 24) }) {
+            buffer[i++] = b;
+        }
+        for (byte b : new byte[] { (byte) (blockAlign),
+                (byte) (blockAlign >> 8) }) {
+            buffer[i++] = b;
+        }
+        for (byte b : new byte[] { (byte) (bitsPerSample),
+                (byte) (bitsPerSample >> 8) }) {
+            buffer[i++] = b;
+        }
+        for (byte b : WaveHeader.DATA_HEADER.getBytes()) {
+            buffer[i++] = b;
+        }
+        for (byte b : new byte[] { (byte) (subChunk2Size),
+                (byte) (subChunk2Size >> 8), (byte) (subChunk2Size >> 16),
+                (byte) (subChunk2Size >> 24) }) {
+            buffer[i++] = b;
+        }
+
+        return buffer;
+    }
+
+    private boolean loadHeader(InputStream inputStream) throws IOException {
+
+        byte[] headerBuffer = new byte[HEADER_BYTE_LENGTH];
+
+        inputStream.read(headerBuffer);
+
+        parseHeader(headerBuffer);
+
+        // FIXME Do header checks.
+
+        // if (bitsPerSample != 8 && bitsPerSample != 16) {
+        // System.err
+        // .println("WaveHeader: only supports bitsPerSample 8 or 16");
+        // return false;
+        // }
+        //
+        // // check the format is support
+        // if (chunkId.toUpperCase().equals(RIFF_HEADER)
+        // && format.toUpperCase().equals(WAVE_HEADER) && audioFormat == 1) {
+        // return true;
+        // } else {
+        // System.err.println("WaveHeader: Unsupported header format");
+        // }
+
+        return true;
+    }
+
+    /**
+     * @param os
+     *            OutputStream to write to
+     * @throws IOException
+     *             IO Exception
+     */
+    public void save(OutputStream os) throws IOException {
+        int byteRate = this.getByteRate();
+        int audioFormat = this.getAudioFormat();
+        int sampleRate = this.getSampleRate();
+        int bitsPerSample = this.getBitsPerSample();
+        int channels = this.getChannels();
+        long chunkSize = this.getChunkSize();
+        long subChunk1Size = this.getSubChunk1Size();
+        long subChunk2Size = this.getSubChunk2Size();
+        int blockAlign = this.getBlockAlign();
+
+        os.write(RIFF_HEADER.getBytes());
+        // little endian
+        os.write(new byte[] { (byte) (chunkSize), (byte) (chunkSize >> 8),
+                (byte) (chunkSize >> 16), (byte) (chunkSize >> 24) });
+        os.write(WaveHeader.WAVE_HEADER.getBytes());
+        os.write(WaveHeader.FMT_HEADER.getBytes());
+        os.write(new byte[] { (byte) (subChunk1Size),
+                (byte) (subChunk1Size >> 8), (byte) (subChunk1Size >> 16),
+                (byte) (subChunk1Size >> 24) });
+        os.write(new byte[] { (byte) (audioFormat), (byte) (audioFormat >> 8) });
+        os.write(new byte[] { (byte) (channels), (byte) (channels >> 8) });
+        os.write(new byte[] { (byte) (sampleRate), (byte) (sampleRate >> 8),
+                (byte) (sampleRate >> 16), (byte) (sampleRate >> 24) });
+        os.write(new byte[] { (byte) (byteRate), (byte) (byteRate >> 8),
+                (byte) (byteRate >> 16), (byte) (byteRate >> 24) });
+        os.write(new byte[] { (byte) (blockAlign), (byte) (blockAlign >> 8) });
+        os.write(new byte[] { (byte) (bitsPerSample),
+                (byte) (bitsPerSample >> 8) });
+        os.write(WaveHeader.DATA_HEADER.getBytes());
+        os.write(new byte[] { (byte) (subChunk2Size),
+                (byte) (subChunk2Size >> 8), (byte) (subChunk2Size >> 16),
+                (byte) (subChunk2Size >> 24) });
+    }
+
+    /**
+     * @return true if the header is a valid format
      */
     public boolean isValid() {
-        return valid;
+        return this.m_valid;
     }
 
     /**
      * @return
      */
     public String getChunkId() {
-        return chunkId;
+        return this.m_chunkId;
     }
 
     /**
      * @return
      */
     public long getChunkSize() {
-        return chunkSize;
+        return this.m_chunkSize;
     }
 
     /**
      * @return
      */
     public String getFormat() {
-        return format;
+        return this.m_format;
     }
 
     /**
      * @return
      */
     public String getSubChunk1Id() {
-        return subChunk1Id;
+        return this.m_subChunk1Id;
     }
 
     /**
      * @return
      */
     public long getSubChunk1Size() {
-        return subChunk1Size;
+        return this.m_subChunk1Size;
     }
 
     /**
      * @return
      */
     public int getAudioFormat() {
-        return audioFormat;
+        return this.m_audioFormat;
     }
 
     /**
      * @return
      */
     public int getChannels() {
-        return channels;
+        return this.m_channels;
     }
 
     /**
      * @return
      */
     public int getSampleRate() {
-        return (int) sampleRate;
+        return (int) this.m_sampleRate;
     }
 
     /**
      * @return
      */
     public int getByteRate() {
-        return (int) byteRate;
+        return (int) this.m_byteRate;
     }
 
     /**
      * @return
      */
     public int getBlockAlign() {
-        return blockAlign;
+        return this.m_blockAlign;
     }
 
     /**
      * @return
      */
     public int getBitsPerSample() {
-        return bitsPerSample;
+        return this.m_bitsPerSample;
     }
 
     /**
      * @return
      */
     public String getSubChunk2Id() {
-        return subChunk2Id;
+        return this.m_subChunk2Id;
     }
 
     /**
      * @return
      */
     public long getSubChunk2Size() {
-        return subChunk2Size;
+        return this.m_subChunk2Size;
     }
 
     /**
      * @param sampleRate
      */
     public void setSampleRate(int sampleRate) {
-        int newSubChunk2Size = (int) (this.subChunk2Size * sampleRate / this.sampleRate);
+        int newSubChunk2Size = (int) (this.m_subChunk2Size * sampleRate / this.m_sampleRate);
         // if num bytes for each sample is even, the size of newSubChunk2Size
         // also needed to be in even number
-        if ((bitsPerSample / 8) % 2 == 0) {
+        if ((this.m_bitsPerSample / 8) % 2 == 0) {
             if (newSubChunk2Size % 2 != 0) {
                 newSubChunk2Size++;
             }
         }
 
-        this.sampleRate = sampleRate;
-        this.byteRate = sampleRate * bitsPerSample / 8;
-        this.chunkSize = newSubChunk2Size + 36;
-        this.subChunk2Size = newSubChunk2Size;
+        this.m_sampleRate = sampleRate;
+        this.m_byteRate = sampleRate * this.m_bitsPerSample / 8;
+        this.m_chunkSize = newSubChunk2Size + 36;
+        this.m_subChunk2Size = newSubChunk2Size;
     }
 
     /**
      * @param chunkId
      */
     public void setChunkId(String chunkId) {
-        this.chunkId = chunkId;
+        this.m_chunkId = chunkId;
     }
 
     /**
      * @param chunkSize
      */
     public void setChunkSize(long chunkSize) {
-        this.chunkSize = chunkSize;
+        this.m_chunkSize = chunkSize;
     }
 
     /**
      * @param format
      */
     public void setFormat(String format) {
-        this.format = format;
+        this.m_format = format;
     }
 
     /**
      * @param subChunk1Id
      */
     public void setSubChunk1Id(String subChunk1Id) {
-        this.subChunk1Id = subChunk1Id;
+        this.m_subChunk1Id = subChunk1Id;
     }
 
     /**
      * @param subChunk1Size
      */
     public void setSubChunk1Size(long subChunk1Size) {
-        this.subChunk1Size = subChunk1Size;
+        this.m_subChunk1Size = subChunk1Size;
     }
 
     /**
      * @param audioFormat
      */
     public void setAudioFormat(int audioFormat) {
-        this.audioFormat = audioFormat;
+        this.m_audioFormat = audioFormat;
     }
 
     /**
      * @param channels
      */
     public void setChannels(int channels) {
-        this.channels = channels;
+        this.m_channels = channels;
     }
 
     /**
      * @param byteRate
      */
     public void setByteRate(long byteRate) {
-        this.byteRate = byteRate;
+        this.m_byteRate = byteRate;
     }
 
     /**
      * @param blockAlign
      */
     public void setBlockAlign(int blockAlign) {
-        this.blockAlign = blockAlign;
+        this.m_blockAlign = blockAlign;
     }
 
     /**
      * @param bitsPerSample
      */
     public void setBitsPerSample(int bitsPerSample) {
-        this.bitsPerSample = bitsPerSample;
+        this.m_bitsPerSample = bitsPerSample;
     }
 
     /**
      * @param subChunk2Id
      */
     public void setSubChunk2Id(String subChunk2Id) {
-        this.subChunk2Id = subChunk2Id;
+        this.m_subChunk2Id = subChunk2Id;
     }
 
     /**
      * @param subChunk2Size
      */
     public void setSubChunk2Size(long subChunk2Size) {
-        this.subChunk2Size = subChunk2Size;
+        this.m_subChunk2Size = subChunk2Size;
     }
 
     @Override
     public String toString() {
 
         StringBuffer sb = new StringBuffer();
-        sb.append("chunkId: " + chunkId);
+        sb.append("chunkId: " + this.m_chunkId);
         sb.append("\n");
-        sb.append("chunkSize: " + chunkSize);
+        sb.append("chunkSize: " + this.m_chunkSize);
         sb.append("\n");
-        sb.append("format: " + format);
+        sb.append("format: " + this.m_format);
         sb.append("\n");
-        sb.append("subChunk1Id: " + subChunk1Id);
+        sb.append("subChunk1Id: " + this.m_subChunk1Id);
         sb.append("\n");
-        sb.append("subChunk1Size: " + subChunk1Size);
+        sb.append("subChunk1Size: " + this.m_subChunk1Size);
         sb.append("\n");
-        sb.append("audioFormat: " + audioFormat);
+        sb.append("audioFormat: " + this.m_audioFormat);
         sb.append("\n");
-        sb.append("channels: " + channels);
+        sb.append("channels: " + this.m_channels);
         sb.append("\n");
-        sb.append("sampleRate: " + sampleRate);
+        sb.append("sampleRate: " + this.m_sampleRate);
         sb.append("\n");
-        sb.append("byteRate: " + byteRate);
+        sb.append("byteRate: " + this.m_byteRate);
         sb.append("\n");
-        sb.append("blockAlign: " + blockAlign);
+        sb.append("blockAlign: " + this.m_blockAlign);
         sb.append("\n");
-        sb.append("bitsPerSample: " + bitsPerSample);
+        sb.append("bitsPerSample: " + this.m_bitsPerSample);
         sb.append("\n");
-        sb.append("subChunk2Id: " + subChunk2Id);
+        sb.append("subChunk2Id: " + this.m_subChunk2Id);
         sb.append("\n");
-        sb.append("subChunk2Size: " + subChunk2Size);
+        sb.append("subChunk2Size: " + this.m_subChunk2Size);
         return sb.toString();
     }
 }

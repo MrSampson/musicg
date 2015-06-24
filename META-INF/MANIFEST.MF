@@ -25,3 +25,4 @@ Export-Package: com.musicg.api;uses:="com.musicg.wave",
  com.musicg.wave.extension;uses:="com.musicg.wave"
 Bundle-ClassPath: musicg.jar,
  .
+Import-Package: org.knime.core.util
