@@ -129,7 +129,7 @@ public class Wave implements Serializable {
                 WaveHeader.HEADER_BYTE_LENGTH));        
 
         this.m_data = Arrays.copyOfRange(buffer, WaveHeader.HEADER_BYTE_LENGTH,
-                buffer.length - WaveHeader.HEADER_BYTE_LENGTH);
+                buffer.length);
 
     }
 
