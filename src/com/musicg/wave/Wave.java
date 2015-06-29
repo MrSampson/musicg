@@ -68,13 +68,14 @@ public class Wave implements Serializable {
         inputStream.close();
     }
 
-    private void initWaveWithFileInputStream(FileInputStream in) throws IOException {
+    private void initWaveWithFileInputStream(FileInputStream in)
+            throws IOException {
         this.m_waveHeader = new WaveHeader(in);
-        if(this.m_waveHeader.isValid()){
+        if (this.m_waveHeader.isValid()) {
             this.m_data = new byte[in.available()];
             in.read(this.m_data);
         }
-        
+
     }
 
     /**
@@ -116,7 +117,6 @@ public class Wave implements Serializable {
         is.close();
     }
 
-    
     private void initWaveWithInputStream(InputStream in) throws IOException {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -126,7 +126,7 @@ public class Wave implements Serializable {
         byte[] buffer = out.toByteArray();
 
         this.m_waveHeader = new WaveHeader(Arrays.copyOf(buffer,
-                WaveHeader.HEADER_BYTE_LENGTH));        
+                WaveHeader.HEADER_BYTE_LENGTH));
 
         this.m_data = Arrays.copyOfRange(buffer, WaveHeader.HEADER_BYTE_LENGTH,
                 buffer.length);
@@ -409,8 +409,18 @@ public class Wave implements Serializable {
         os.write(this.getBytes());
     }
 
+    /**
+     * @return the WAV header in packed format
+     */
     public byte[] getHeaderBuffer() {
 
-        return null;
+        return this.m_waveHeader.getBytes();
+    }
+
+    /**
+     * @return the WAV header
+     */
+    public WaveHeader getHeader() {
+        return this.m_waveHeader;
     }
 }

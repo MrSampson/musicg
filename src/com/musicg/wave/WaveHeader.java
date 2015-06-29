@@ -19,8 +19,6 @@ package com.musicg.wave;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
 
 /**
  * WAV File Specification
@@ -71,7 +69,7 @@ public class WaveHeader {
      * Constructor.
      */
     public WaveHeader() {
-  
+
     }
 
     /**
@@ -300,8 +298,8 @@ public class WaveHeader {
     /**
      * @return
      */
-    public long getChunkSize() {
-        return this.m_chunkSize;
+    public int getChunkSize() {
+        return (int) this.m_chunkSize;
     }
 
     /**
@@ -377,8 +375,8 @@ public class WaveHeader {
     /**
      * @return
      */
-    public long getSubChunk2Size() {
-        return this.m_subChunk2Size;
+    public int getSubChunk2Size() {
+        return (int) this.m_subChunk2Size;
     }
 
     /**
