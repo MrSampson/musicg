@@ -162,10 +162,6 @@ public class WaveHeader {
             buffer[i++] = b;
         }
 
-        for (byte b : new byte[] { (byte) (chunkSize), (byte) (chunkSize >> 8),
-                (byte) (chunkSize >> 16), (byte) (chunkSize >> 24) }) {
-            buffer[i++] = b;
-        }
         for (byte b : WaveHeader.WAVE_HEADER.getBytes()) {
             buffer[i++] = b;
         }
