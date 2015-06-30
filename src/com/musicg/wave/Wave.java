@@ -47,8 +47,7 @@ public class Wave implements Serializable {
     private byte[] fingerprint;
 
     /**
-     * Constructor
-     * 
+     * Constructor.
      */
     public Wave() {
         this.m_waveHeader = new WaveHeader();
