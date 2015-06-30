@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011 Jacquet Wong
- * Copyright (C) 2015 Oliver Sampson
+ * Copyright (C) 2015 Oliver Sampson, University of Konstanz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,103 +133,7 @@ public class Wave implements Serializable {
 
     }
 
-    /**
-     * Trim the wave data
-     * 
-     * @param leftTrimNumberOfSample
-     *            Number of sample trimmed from beginning
-     * @param rightTrimNumberOfSample
-     *            Number of sample trimmed from ending
-     */
-    public void trim(int leftTrimNumberOfSample, int rightTrimNumberOfSample) {
 
-        long chunkSize = this.m_waveHeader.getChunkSize();
-        long subChunk2Size = this.m_waveHeader.getSubChunk2Size();
-
-        long totalTrimmed = leftTrimNumberOfSample + rightTrimNumberOfSample;
-
-        if (totalTrimmed > subChunk2Size) {
-            leftTrimNumberOfSample = (int) subChunk2Size;
-        }
-
-        // update wav info
-        chunkSize -= totalTrimmed;
-        subChunk2Size -= totalTrimmed;
-
-        if (chunkSize >= 0 && subChunk2Size >= 0) {
-            this.m_waveHeader.setChunkSize(chunkSize);
-            this.m_waveHeader.setSubChunk2Size(subChunk2Size);
-
-            byte[] trimmedData = new byte[(int) subChunk2Size];
-            System.arraycopy(this.m_data, (int) leftTrimNumberOfSample,
-                    trimmedData, 0, (int) subChunk2Size);
-            this.m_data = trimmedData;
-        } else {
-            System.err.println("Trim error: Negative length");
-        }
-    }
-
-    /**
-     * Trim the wave data from beginning
-     * 
-     * @param numberOfSample
-     *            numberOfSample trimmed from beginning
-     */
-    public void leftTrim(int numberOfSample) {
-        trim(numberOfSample, 0);
-    }
-
-    /**
-     * Trim the wave data from ending
-     * 
-     * @param numberOfSample
-     *            numberOfSample trimmed from ending
-     */
-    public void rightTrim(int numberOfSample) {
-        trim(0, numberOfSample);
-    }
-
-    /**
-     * Trim the wave data
-     * 
-     * @param leftTrimSecond
-     *            Seconds trimmed from beginning
-     * @param rightTrimSecond
-     *            Seconds trimmed from ending
-     */
-    public void trim(double leftTrimSecond, double rightTrimSecond) {
-
-        int sampleRate = this.m_waveHeader.getSampleRate();
-        int bitsPerSample = this.m_waveHeader.getBitsPerSample();
-        int channels = this.m_waveHeader.getChannels();
-
-        int leftTrimNumberOfSample = (int) (sampleRate * bitsPerSample / 8
-                * channels * leftTrimSecond);
-        int rightTrimNumberOfSample = (int) (sampleRate * bitsPerSample / 8
-                * channels * rightTrimSecond);
-
-        trim(leftTrimNumberOfSample, rightTrimNumberOfSample);
-    }
-
-    /**
-     * Trim the wave data from beginning
-     * 
-     * @param second
-     *            Seconds trimmed from beginning
-     */
-    public void leftTrim(double second) {
-        trim(second, 0);
-    }
-
-    /**
-     * Trim the wave data from ending
-     * 
-     * @param second
-     *            Seconds trimmed from ending
-     */
-    public void rightTrim(double second) {
-        trim(0, second);
-    }
 
     /**
      * Get the wave header
@@ -422,5 +326,14 @@ public class Wave implements Serializable {
      */
     public WaveHeader getHeader() {
         return this.m_waveHeader;
+    }
+
+    /**
+     * Sets the audio data.
+     * @param data
+     */
+    public void setBytes(byte[] data) {
+       m_data = data;
+        
     }
 }

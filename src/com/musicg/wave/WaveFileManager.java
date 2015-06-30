@@ -26,6 +26,7 @@ import java.io.OutputStream;
  * @author Oliver Sampson, University of Konstanz
  *
  */
+@Deprecated
 public class WaveFileManager {
 
     /**
