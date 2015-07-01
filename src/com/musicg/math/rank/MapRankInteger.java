@@ -36,17 +36,17 @@ public class MapRankInteger {
 	// if sharp limited, will return sharp numKeys, otherwise will return
 	// until the values not equals the exact key's value
 
-	Set<Entry<Integer, Integer>> mapEntrySet = map.entrySet();
+	Set<Entry<Integer, Integer>> mapEntrySet = this.map.entrySet();
 	List<Integer> keyList = new LinkedList<>();
 
 	// if the numKeys is larger than map size, limit it
-	if (numKeys > map.size()) {
-	    numKeys = map.size();
+	if (numKeys > this.map.size()) {
+	    numKeys = this.map.size();
 	}
 	// end if the numKeys is larger than map size, limit it
 
-	if (map.size() > 0) {
-	    int[] array = new int[map.size()];
+	if (this.map.size() > 0) {
+	    int[] array = new int[this.map.size()];
 	    int count = 0;
 
 	    // get the pass values
@@ -57,7 +57,7 @@ public class MapRankInteger {
 	    // end get the pass values
 
 	    int targetindex;
-	    if (acsending) {
+	    if (this.acsending) {
 		targetindex = numKeys;
 	    } else {
 		targetindex = array.length - numKeys;
@@ -74,8 +74,8 @@ public class MapRankInteger {
 	    for (Entry<Integer, Integer> entry :mapEntrySet) {
 		 
 		int value = entry.getValue();
-		if ((acsending && value <= passValue)
-			|| (!acsending && value >= passValue)) {
+		if ((this.acsending && value <= passValue)
+			|| (!this.acsending && value >= passValue)) {
 		    passedMap.put(entry.getKey(), value);
 		    valueList.add(value);
 		}
@@ -90,7 +90,7 @@ public class MapRankInteger {
 	    // get the list of keys
 	    int resultCount = 0;
 	    int index;
-	    if (acsending) {
+	    if (this.acsending) {
 		index = 0;
 	    } else {
 		index = listArr.length - 1;
@@ -114,7 +114,7 @@ public class MapRankInteger {
 		    }
 		}
 
-		if (acsending) {
+		if (this.acsending) {
 		    index++;
 		} else {
 		    index--;
