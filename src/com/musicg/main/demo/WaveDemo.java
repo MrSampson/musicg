@@ -19,16 +19,17 @@ import java.io.IOException;
 
 import com.musicg.wave.Wave;
 import com.musicg.wave.WaveFileManager;
+import com.musicg.wave.WaveTrimmer;
 
 public class WaveDemo {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		String filename = "audio_work/cock_a_1.wav";
-		String outFolder="out";
+        String filename = "audio_work/cock_a_1.wav";
+        String outFolder = "out";
 
-		// create a wave object
-		Wave wave = null;
+        // create a wave object
+        Wave wave = null;
         try {
             wave = new Wave(filename);
         } catch (IOException e1) {
@@ -36,19 +37,27 @@ public class WaveDemo {
             e1.printStackTrace();
         }
 
-		// print the wave header and info
-		System.out.println(wave);
+        // print the wave header and info
+        System.out.println(wave);
 
-		// trim the wav
-		wave.leftTrim(1);
-		wave.rightTrim(0.5F);
+        // trim the wav
 
-		// save the trimmed wav
-		try {
-		    WaveFileManager.save(outFolder+"/out.wav", wave);
-		} catch (IOException e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		}
-	}
+        WaveTrimmer t = new WaveTrimmer(wave);
+        try {
+            t.leftTrim(1);
+            t.rightTrim(0.5F);
+        } catch (Exception e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+        wave = t.getWave();
+        // save the trimmed wav
+        try {
+            wave.save(outFolder + "/out.wav");
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

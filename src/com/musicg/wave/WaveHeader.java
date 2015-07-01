@@ -22,7 +22,7 @@ import java.io.OutputStream;
 
 /**
  * WAV File Specification
- * https://ccrma.stanford.edu/courses/422/projects/WaveFormat/
+ * http://www-mmsp.ece.mcgill.ca/documents/AudioFormats/WAVE/WAVE.html
  * 
  * @author Jacquet Wong
  * @author Oliver Sampson
@@ -285,21 +285,21 @@ public class WaveHeader {
     }
 
     /**
-     * @return
+     * @return chunk ID
      */
     public String getChunkId() {
         return this.m_chunkId;
     }
 
     /**
-     * @return
+     * @return chunk size
      */
     public int getChunkSize() {
         return (int) this.m_chunkSize;
     }
 
     /**
-     * @return
+     * @return the format
      */
     public String getFormat() {
         return this.m_format;
