@@ -23,6 +23,7 @@ import java.io.OutputStream;
 /**
  * WAV File Specification
  * http://www-mmsp.ece.mcgill.ca/documents/AudioFormats/WAVE/WAVE.html
+ * http://www.neurophys.wisc.edu/auditory/riff-format.txt
  * 
  * @author Jacquet Wong
  * @author Oliver Sampson
